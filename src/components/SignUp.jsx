@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
+import "./SignUp.css"; // 👈 Import custom CSS
 
 const SignUp = () => {
   const [user, setUser] = useState({});
@@ -14,11 +15,11 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let { email, password } = user;
+    const { email, password } = user;
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
-        console.log("sign-up successful");
-        navigate("/signin"); // 👈 Redirect to sign-in after sign-up
+        console.log("Sign-up successful");
+        navigate("/signin");
       })
       .catch((error) => {
         console.log(error);
@@ -28,36 +29,38 @@ const SignUp = () => {
   };
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-md-6 mx-auto mt-5">
-          <h1>Sign-Up</h1>
-          <form method="post" onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email :</label>
-              <input
-                type="email"
-                name="email"
-                value={user.email || ""}
-                onChange={handleChange}
-                className="form-control"
-                id="email"
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password :</label>
-              <input
-                name="password"
-                value={user.password || ""}
-                onChange={handleChange}
-                type="password"
-                className="form-control"
-                id="password"
-              />
-            </div>
-            <button type="submit" className="btn btn-primary">Submit</button>
-          </form>
-        </div>
+    <div className="signup-container">
+      <div className="signup-box">
+        <h2 className="text-center mb-4 ">Create Your Account</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label text-white">Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={user.email || ""}
+              onChange={handleChange}
+              className="form-control"
+              id="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="form-label text-white">Password:</label>
+            <input
+              name="password"
+              value={user.password || ""}
+              onChange={handleChange}
+              type="password"
+              className="form-control"
+              id="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-light w-100">Sign Up</button>
+        </form>
       </div>
     </div>
   );

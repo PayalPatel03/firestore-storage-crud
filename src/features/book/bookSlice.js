@@ -1,53 +1,83 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { db } from "../../firebase/config";
-import { collection, addDoc, deleteDoc,getDocs, doc } from "firebase/firestore";
-
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 
 const initialState = {
-    book : [],
-    loading : false,
-    error : null,
-}
+  book: [],
+  loading: false,
+  error: null,
+};
 
-// Reference 
-const bookRef = collection(db,'books')
+// Reference
+const bookRef = collection(db, "books");
 
-export const addBook = createAsyncThunk('book/addBook',async (book,{rejectWithValue})=>{
+export const addBook = createAsyncThunk(
+  "book/addBook",
+  async (book, { rejectWithValue }) => {
     try {
-        let docRef = await addDoc(bookRef,book)
-        return {...book,id : docRef.id }
+      let docRef = await addDoc(bookRef, book);
+      return { ...book, id: docRef.id };
     } catch (error) {
-        return rejectWithValue(error.message)
+      return rejectWithValue(error.message);
     }
-})
+  }
+);
 
-export const fetchBook = createAsyncThunk('book/fetchBook',async (_,{rejectWithValue})=>{
+export const fetchBook = createAsyncThunk(
+  "book/fetchBook",
+  async (_, { rejectWithValue }) => {
     try {
-        let snapShot = await getDocs(bookRef)
-        return snapShot.docs.map(doc=>({...doc.data(),id : doc.id}))
+      let snapShot = await getDocs(bookRef);
+      return snapShot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     } catch (error) {
-        return rejectWithValue(error.message)
+      return rejectWithValue(error.message);
     }
-})
+  }
+);
 
-export const deleteBook = createAsyncThunk('book/deleteBook',async (id,{rejectWithValue})=>{
+export const deleteBook = createAsyncThunk(
+  "book/deleteBook",
+  async (id, { rejectWithValue }) => {
     try {
-        const bookRef = doc(db,'books',id)
-        await deleteDoc(bookRef)
-        return id;
+      const bookRef = doc(db, "books", id);
+      await deleteDoc(bookRef);
+      return id;
     } catch (error) {
-        return rejectWithValue(error.message)
+      return rejectWithValue(error.message);
     }
-})
-
-
+  }
+);
+//update
+export const updateBook = createAsyncThunk(
+  "book/updateBook",
+  async (book, { rejectWithValue }) => {
+    try {
+      const bookRef = doc(db, "books", book.id);
+      await updateDoc(bookRef, {
+        eName: book.eName,
+        email: book.email,
+        password: book.password,
+      });
+      return book;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 export const bookSlice = createSlice({
-    name : "book",
-    initialState,
-    extraReducers : (builder)=>{
-        // Create
-         builder
+  name: "book",
+  initialState,
+  extraReducers: (builder) => {
+    // Create
+    builder
       .addCase(addBook.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -79,16 +109,31 @@ export const bookSlice = createSlice({
       .addCase(deleteBook.pending, (state) => {
         state.loading = true;
         state.error = null;
-        })
-        .addCase(deleteBook.fulfilled, (state, action) => {
-            state.loading = false;
-            state.book = state.book.filter(item => item.id !== action.payload);
-        })
-        .addCase(deleteBook.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        })
-    },
-})
+      })
+      .addCase(deleteBook.fulfilled, (state, action) => {
+        state.loading = false;
+        state.book = state.book.filter((item) => item.id !== action.payload);
+      })
+      .addCase(deleteBook.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update
+      .addCase(updateBook.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateBook.fulfilled, (state, action) => {
+        state.loading = false;
+        state.book = state.book.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        );
+      })
+      .addCase(updateBook.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
 
 export default bookSlice.reducer;
