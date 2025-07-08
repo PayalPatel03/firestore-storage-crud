@@ -1,15 +1,33 @@
+import React from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import SignUp from "./components/SignUp";
+import SignIn from "./components/SignIn";
+import Form from "./components/Form";
 
-import React from 'react'
-import SignUp from './components/SignUp'
-import SignIn from './components/SignIn'
+// Protect Route
+const isAuthenticated = () => {
+  return localStorage.getItem("user") !== null;
+};
+
+const ProtectedRoute = ({ children }) => {
+  return isAuthenticated() ? children : <Navigate to="/login" />;
+};
 
 const App = () => {
   return (
-    <>
-      <SignUp/>
-      <SignIn/>
-    </>
-  )
-}
+    <Routes>
+      <Route path="/login" element={<SignUp />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Form />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+};
 
-export default App
+export default App;
