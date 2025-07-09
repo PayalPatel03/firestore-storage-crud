@@ -22,7 +22,8 @@ const Form = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+     navigate("/");
+
     } else {
       dispatch(fetchBook());
     }

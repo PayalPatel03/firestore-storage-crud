@@ -1,30 +1,31 @@
+// src/components/SignIn.jsx
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
-import "./SignIn.css"; // 👈 custom CSS
+import "./SignIn.css";
 
 const SignIn = () => {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    let { name, value } = e.target;
+    const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let { email, password } = user;
+    const { email, password } = user;
     signInWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        console.log("sign-In successful");
+        console.log("Sign-in successful");
         localStorage.setItem("user", JSON.stringify(res.user));
-        navigate("/");
+        navigate("/form");
       })
       .catch((error) => {
-        console.log(error.code);
-        alert(`Wrong ${error.code}`);
+        console.error(error.code);
+        alert(`Error: ${error.message}`);
       });
     setUser({});
   };
@@ -32,7 +33,7 @@ const SignIn = () => {
   return (
     <div className="signin-container">
       <div className="signin-box">
-        <h2 className="text-center mb-4">Welcome Back </h2>
+        <h2 className="text-center mb-4">Welcome Back</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label text-white">Email:</label>
@@ -50,10 +51,10 @@ const SignIn = () => {
           <div className="mb-4">
             <label htmlFor="password" className="form-label text-white">Password:</label>
             <input
+              type="password"
               name="password"
               value={user.password || ""}
               onChange={handleChange}
-              type="password"
               className="form-control"
               id="password"
               placeholder="Enter your password"

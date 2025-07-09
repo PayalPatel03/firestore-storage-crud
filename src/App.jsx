@@ -1,31 +1,41 @@
+// src/App.jsx
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import Form from "./components/Form";
 
-// Protect Route
+// Authentication check
 const isAuthenticated = () => {
   return localStorage.getItem("user") !== null;
 };
 
+// Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  return isAuthenticated() ? children : <Navigate to="/" />;
 };
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/login" element={<SignUp />} />
+      {/* SignUp page (default route) */}
+      <Route path="/" element={<SignUp />} />
+
+      {/* SignIn route */}
       <Route path="/signin" element={<SignIn />} />
+
+      {/* Protected Form route */}
       <Route
-        path="/"
+        path="/form"
         element={
           <ProtectedRoute>
             <Form />
           </ProtectedRoute>
         }
       />
+
+      {/* Catch-all route */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };

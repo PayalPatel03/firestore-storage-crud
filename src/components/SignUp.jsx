@@ -1,15 +1,16 @@
+// src/components/SignUp.jsx
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
-import "./SignUp.css"; // 👈 Import custom CSS
+import "./SignUp.css";
 
 const SignUp = () => {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    let { name, value } = e.target;
+    const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
 
@@ -22,7 +23,7 @@ const SignUp = () => {
         navigate("/signin");
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         alert(error.message);
       });
     setUser({});
@@ -31,7 +32,7 @@ const SignUp = () => {
   return (
     <div className="signup-container">
       <div className="signup-box">
-        <h2 className="text-center mb-4 ">Create Your Account</h2>
+        <h2 className="text-center mb-4">Create Your Account</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label text-white">Email:</label>
@@ -49,10 +50,10 @@ const SignUp = () => {
           <div className="mb-4">
             <label htmlFor="password" className="form-label text-white">Password:</label>
             <input
+              type="password"
               name="password"
               value={user.password || ""}
               onChange={handleChange}
-              type="password"
               className="form-control"
               id="password"
               placeholder="Enter your password"
